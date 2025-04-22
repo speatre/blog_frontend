@@ -1,22 +1,25 @@
-import { Routes, Route } from 'react-router-dom';
-import Home from '@/pages/Home';
-import Auth from '@/pages/Auth';
-import CreatePost from '@/pages/CreatePost';
-import PostDetail from '@/pages/PostDetail';
-import Navbar from '@/components/Navbar';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { Header } from './components/Header';
+import { Home } from './pages/Home';
+import { PostDetail } from './pages/PostDetail';
+import { Login } from './pages/Login';
+import { Signup } from './pages/Signup';
+import { Dashboard } from './pages/Dashboard';
 
-function App() {
+export default function App() {
   return (
-    <div className="container mx-auto p-4">
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/create" element={<CreatePost />} />
-        <Route path="/posts/:id" element={<PostDetail />} />
-      </Routes>
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/post/:id" element={<PostDetail />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
-
-export default App;

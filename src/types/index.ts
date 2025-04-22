@@ -1,17 +1,20 @@
 export interface User {
-    _id: string;
-    email: string;
+  _id: string;
+  username: string;
+  email: string;
 }
-  
+
 export interface Post {
   _id: string;
   title: string;
   content: string;
-  author: User | null;
+  author: User;
   createdAt: string;
 }
 
-export interface AuthResponse {
-    token: string;
-    user: User;
+export interface Comment {
+  _id: string;
+  content: string;
+  author: User;
+  createdAt: string;
 }

@@ -1,40 +1,67 @@
-import { createContext, useState, useEffect, ReactNode } from 'react';
-import { getCurrentUser, logout } from '@/services/api';
-import { User } from '@/types';
+import { createContext, useState, ReactNode } from 'react';
+import { login, signup, logout } from '../api/api';
+import { User } from '../types';
 
 interface AuthContextType {
   user: User | null;
-  setUser: (user: User | null) => void;
-  loading: boolean;
-  logout: () => void;
+  token: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  signup: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType>({
+  user: null,
+  token: null,
+  login: async () => {},
+  signup: async () => {},
+  logout: async () => {},
+});
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      getCurrentUser()
-        .then((res) => setUser(res.data))
-        .catch(() => localStorage.removeItem('token'))
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
+  const handleLogin = async (email: string, password: string) => {
+    try {
+      const { user, token } = await login(email, password);
+      setUser(user);
+      setToken(token);
+      localStorage.setItem('token', token);
+    } catch (error) {
+      throw new Error('Login failed');
     }
-  }, []);
+  };
 
-  const handleLogout = () => {
-    logout();
-    setUser(null);
+  const handleSignup = async (email: string, password: string) => {
+    try {
+      const { user, token } = await signup(email, password);
+      setUser(user);
+      setToken(token);
+      localStorage.setItem('token', token);
+    } catch (error) {
+      throw new Error('Signup failed');
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem('token');
+    } catch (error) {
+      console.error('Logout failed', error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading, logout: handleLogout }}>
+    <AuthContext.Provider value={{ user, token, login: handleLogin, signup: handleSignup, logout: handleLogout }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
