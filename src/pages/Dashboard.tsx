@@ -19,7 +19,7 @@ export const Dashboard = () => {
     const fetchPosts = async () => {
       try {
         const data = await getPosts();
-        setPosts(data.filter((post: Post) => post.author._id === user._id));
+        setPosts(data.posts.filter((post: Post) => post.user_id === parseInt(user._id)));
       } catch (error) {
         console.error('Failed to fetch posts', error);
       }
@@ -31,7 +31,7 @@ export const Dashboard = () => {
     try {
       await createPost(post);
       const data = await getPosts();
-      setPosts(data.filter((post: Post) => post.author._id === user!._id));
+      setPosts(data.posts.filter((post: Post) => post.user_id === parseInt(user!._id)));
     } catch (error) {
       console.error('Failed to create post', error);
     }
@@ -40,10 +40,10 @@ export const Dashboard = () => {
   const handleUpdate = async (post: { title: string; content: string }) => {
     if (!editingPost) return;
     try {
-      await updatePost(editingPost._id, post);
+      await updatePost(editingPost.id.toString(), post);
       setEditingPost(null);
       const data = await getPosts();
-      setPosts(data.filter((post: Post) => post.author._id === user!._id));
+      setPosts(data.filter((post: Post) => post.user_id === parseInt(user!._id)));
     } catch (error) {
       console.error('Failed to update post', error);
     }
@@ -52,7 +52,7 @@ export const Dashboard = () => {
   const handleDelete = async (id: string) => {
     try {
       await deletePost(id);
-      setPosts(posts.filter((post) => post._id !== id));
+      setPosts(posts.filter((post) => post.id !== parseInt(id)));
     } catch (error) {
       console.error('Failed to delete post', error);
     }
@@ -66,7 +66,7 @@ export const Dashboard = () => {
       <h2 className="text-2xl font-bold mt-8 mb-2">Your Posts</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {posts.map((post) => (
-          <div key={post._id} className="border p-4 rounded shadow">
+          <div key={post.id} className="border p-4 rounded shadow">
             <h3 className="text-xl font-bold">{post.title}</h3>
             <p>{post.content.substring(0, 100)}...</p>
             <div className="mt-2">
@@ -77,7 +77,7 @@ export const Dashboard = () => {
                 Edit
               </button>
               <button
-                onClick={() => handleDelete(post._id)}
+                onClick={() => handleDelete(post.id.toString())}
                 className="bg-red-500 text-white px-2 py-1 rounded"
               >
                 Delete

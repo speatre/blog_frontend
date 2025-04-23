@@ -1,20 +1,27 @@
 export interface User {
-  _id: string;
+  id: string;
   username: string;
   email: string;
+  created_at: string;
+  updated_at: string | null;
 }
 
 export interface Post {
-  _id: string;
+  id: number;
   title: string;
   content: string;
-  author: User;
-  createdAt: string;
+  user_id: number;
+  email: string;
+  created_at: string;
+  updated_at: string | null;
 }
 
 export interface Comment {
-  _id: string;
+  id: string;
   content: string;
-  author: User;
+  user_id: User;
+  post_id: Post;
   createdAt: string;
+  created_at: string;
+  updated_at: string | null;
 }

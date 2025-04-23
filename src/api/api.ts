@@ -27,6 +27,11 @@ export const logout = async () => {
   await apiClient.post('/auth/logout');
 };
 
+export const getUser = async () => {
+  const response = await apiClient.get('/users/me');
+  return response.data;
+};
+
 export const getPosts = async () => {
   const response = await apiClient.get('/posts');
   return response.data;
