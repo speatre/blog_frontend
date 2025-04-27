@@ -59,10 +59,10 @@ export const PostDetail = () => {
           <p className="text-gray-600">No comments yet.</p>
         ) : (
           comments.map((comment) => (
-            <div key={comment._id} className="border p-4 rounded">
+            <div key={comment.id} className="border p-4 rounded">
               <p>{comment.content}</p>
               <p className="text-gray-600">
-                By {comment.author.username} on {new Date(comment.createdAt).toLocaleDateString()}
+                By {comment.user_id.username} on {new Date(comment.createdAt).toLocaleDateString()}
               </p>
             </div>
           ))

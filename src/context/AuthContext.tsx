@@ -4,7 +4,8 @@ import { User } from '../types';
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
+  access_token: string | null;
+  refresh_token: string | null;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -12,7 +13,8 @@ interface AuthContextType {
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
-  token: null,
+  access_token: null,
+  refresh_token: null,
   login: async () => {},
   signup: async () => {},
   logout: async () => {},
@@ -24,14 +26,17 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [access_token, setAccessToken] = useState<string | null>(localStorage.getItem('access_token'));
+  const [refresh_token, setRefreshToken] = useState<string | null>(localStorage.getItem('refresh_token'));
 
   const handleLogin = async (email: string, password: string) => {
     try {
-      const { user, token } = await login(email, password);
+      const { user, access_token, refresh_token } = await login(email, password);
       setUser(user);
-      setToken(token);
-      localStorage.setItem('token', token);
+      setAccessToken(access_token);
+      setRefreshToken(refresh_token);
+      localStorage.setItem('access_token', access_token);
+      localStorage.setItem('refresh_token', refresh_token);
     } catch (error) {
       throw new Error('Login failed');
     }
@@ -39,10 +44,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const handleSignup = async (email: string, password: string) => {
     try {
-      const { user, token } = await signup(email, password);
+      const { user } = await signup(email, password);
       setUser(user);
-      setToken(token);
-      localStorage.setItem('token', token);
     } catch (error) {
       throw new Error('Signup failed');
     }
@@ -52,7 +55,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       await logout();
       setUser(null);
-      setToken(null);
       localStorage.removeItem('token');
     } catch (error) {
       console.error('Logout failed', error);
@@ -60,7 +62,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login: handleLogin, signup: handleSignup, logout: handleLogout }}>
+    <AuthContext.Provider value={{ user, access_token, refresh_token, login: handleLogin, signup: handleSignup, logout: handleLogout }}>
       {children}
     </AuthContext.Provider>
   );

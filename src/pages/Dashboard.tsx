@@ -19,7 +19,7 @@ export const Dashboard = () => {
     const fetchPosts = async () => {
       try {
         const data = await getPosts();
-        setPosts(data.posts.filter((post: Post) => post.user_id === parseInt(user._id)));
+        setPosts(data.posts.filter((post: Post) => post.user_id === parseInt(user.id)));
       } catch (error) {
         console.error('Failed to fetch posts', error);
       }
@@ -31,7 +31,7 @@ export const Dashboard = () => {
     try {
       await createPost(post);
       const data = await getPosts();
-      setPosts(data.posts.filter((post: Post) => post.user_id === parseInt(user!._id)));
+      setPosts(data.posts.filter((post: Post) => post.user_id === parseInt(user!.id)));
     } catch (error) {
       console.error('Failed to create post', error);
     }
@@ -43,7 +43,7 @@ export const Dashboard = () => {
       await updatePost(editingPost.id.toString(), post);
       setEditingPost(null);
       const data = await getPosts();
-      setPosts(data.filter((post: Post) => post.user_id === parseInt(user!._id)));
+      setPosts(data.filter((post: Post) => post.user_id === parseInt(user!.id)));
     } catch (error) {
       console.error('Failed to update post', error);
     }
